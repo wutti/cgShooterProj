@@ -17,11 +17,13 @@ int			frame = 0;	// index of rendering frames
 bool		bMouseLButtonDown = false;
 Mesh*		pMesh_AK = nullptr;
 Mesh*		pMesh_Box = nullptr;
+Mesh*		pMesh_World = nullptr;
 Mesh*		pMesh_CC = nullptr;
 Camera		camera;
 const int	NUM_OBJECTS = 9;
 AK			ak;
 Box			box;
+Box			world;
 Trackball	trackball(camera.viewMatrix, 1.0f);
 GLuint	textureObject = 0;
 Light		light;
@@ -267,17 +269,25 @@ bool userInit()
 {
 
 	pMesh_Box = loadBox();
-	box = Box(1000000.f, vec3(0.f, 0.f, 5.f), loadPic("../bin/Images/Box.jpg"));
+	box = Box(100.f, vec3(0.f, 0.f, 5.f), loadPic("../bin/Images/Box.jpg"));
+	//pMesh_World = loadBox();
+	//world = Box(100000.0f, vec3(-700.f, -20.f, 10.f), loadPic("../bin/Images/wall_texture.jpg"));
+
 	pMesh_AK = loadMesh("../bin/Mods/AK.obj");
 	ak = AK(0.006f, vec3(0, 0,0),loadPic("../bin/Images/tex_AK.jpg"));
 
 	GLuint buff[] = { pMesh_AK->vertexBuffer, pMesh_Box->vertexBuffer };
-
+	//GLuint buff[] = { pMesh_World->vertexBuffer, pMesh_Box->vertexBuffer };
+	
 	// create a vertex buffer
 	glGenBuffers(2, buff);
 	glBindBuffer(GL_ARRAY_BUFFER, pMesh_AK->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, pMesh_AK->vertexList.size()*sizeof(vertex), &pMesh_AK->vertexList[0], GL_STATIC_DRAW);
 	
+	/*glGenBuffers(2, buff);
+	glBindBuffer(GL_ARRAY_BUFFER, pMesh_AK->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, pMesh_World->vertexList.size()*sizeof(vertex), &pMesh_World->vertexList[0], GL_STATIC_DRAW);
+*/
 
 	// init camera
 	camera.eye = vec3(0, 0.2f, 1);
