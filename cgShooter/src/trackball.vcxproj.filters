@@ -55,6 +55,9 @@
     <ClInclude Include="Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\bin\shaders\trackball.vert">
@@ -63,5 +66,11 @@
     <None Include="..\bin\shaders\trackball.frag">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="..\bin\freeglut.dll" />
+    <None Include="..\bin\glew32.dll" />
+    <None Include="..\bin\trackball.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="trackball.rc" />
   </ItemGroup>
 </Project>

@@ -66,12 +66,19 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="objloader.h" />
     <ClInclude Include="AK.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="support.h" />
     <ClInclude Include="trackball.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\bin\freeglut.dll" />
+    <None Include="..\bin\glew32.dll" />
     <None Include="..\bin\shaders\trackball.frag" />
     <None Include="..\bin\shaders\trackball.vert" />
+    <None Include="..\bin\trackball.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="trackball.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

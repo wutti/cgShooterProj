@@ -55,7 +55,6 @@ void render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// notify to GL that we like to use our program now
 	glUseProgram(program);
-
 	// bind vertex position buffer
 	glBindBuffer(GL_ARRAY_BUFFER, pMesh_AK->vertexBuffer);
 
@@ -100,10 +99,47 @@ void render()
 	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
 	glDrawArrays(GL_TRIANGLES,0, pMesh_AK->vertexList.size());
+	
+	//glBindBuffer(GL_ARRAY_BUFFER, NULL);
+	//glBindBuffer(GL_ARRAY_BUFFER, pMesh_Box->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, pMesh_Box->vertexList.size()*sizeof(vertex), &pMesh_Box->vertexList[0], GL_STATIC_DRAW);
 
+	// bind vertex texture buffer
+	vertexTexlLoc = glGetAttribLocation(program, "texcoord");
+	glEnableVertexAttribArray(vertexTexlLoc);
+	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
 
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, ak.getImage());
+
+	//allocate and create mipmap
+	for (int k = 1, w = width >> 1, h = height >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
+		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	// configure texture parameters
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+	//mat4 modelMatrix;
+	//
+	//modelMatrix = mat4::rotate(vec3(0, 1, 0), PI)*modelMatrix;
+	modelMatrix = mat4::rotate(vec3(0, 0, 1), PI)*modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), -PI / 2)*modelMatrix;
+	modelMatrix = mat4::translate(-camera.at) * modelMatrix;
+	//modelMatrix = mat4::scale(10, 10, 10) * modelMatrix;
+	//modelMatrix = mat4::translate(camera.at) * modelMatrix; 
+	modelMatrix = mat4::translate(box.getPosition().x, box.getPosition().y, box.getPosition().z) * modelMatrix;
+
+	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+
+	glDrawArrays(GL_TRIANGLES, 0, pMesh_Box->vertexList.size());
+
+	
 	// now swap backbuffer with front buffer, and display it
 	glutSwapBuffers();
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// increment FRAME index
 	frame++;
@@ -231,18 +267,18 @@ bool userInit()
 {
 
 	pMesh_Box = loadBox();
-	box = Box(100.f, vec3(0.f, 10.f, 10.f), loadPic("../bin/Images/Box.jpg"));
+	box = Box(1000000.f, vec3(0.f, 0.f, 5.f), loadPic("../bin/Images/Box.jpg"));
 	pMesh_AK = loadMesh("../bin/Mods/AK.obj");
 	ak = AK(0.006f, vec3(0, 0,0),loadPic("../bin/Images/tex_AK.jpg"));
 
 	GLuint buff[] = { pMesh_AK->vertexBuffer, pMesh_Box->vertexBuffer };
 
 	// create a vertex buffer
-	glGenBuffers(1, buff);
+	glGenBuffers(2, buff);
 	glBindBuffer(GL_ARRAY_BUFFER, pMesh_AK->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, pMesh_AK->vertexList.size()*sizeof(vertex), &pMesh_AK->vertexList[0], GL_STATIC_DRAW);
-
 	
+
 	// init camera
 	camera.eye = vec3(0, 0.2f, 1);
 	camera.at = vec3(0, 0, 0);
